@@ -84,31 +84,35 @@ def cli(spec, test_plans, transport, host, port: int):
     print(f"Matter Specification Path: {spec}")
     print(f"Test plan path:            {test_plans}")
     matter_spec = MatterSpecData(spec)
-    test_plan_data = MatterTestPlanData(spec)
+    test_plan_data = MatterTestPlanData(test_plans)
 
-    @mcp.resource("data://available/spec-docs")
+    # @mcp.resource("data://available/spec-docs")
+    @mcp.tool()
     def get_spec_documents() -> list[str]:
         """
         Get available specification document names.
         """
         return list(matter_spec.docs.keys())
 
-    @mcp.resource("data://available/test-plans")
-    def get_test_documents() -> list[str]:
+    #@mcp.resource("data://available/test-plans")
+    @mcp.tool()
+    def get_test_plan_documents() -> list[str]:
         """
         Get available test plan document names.
         """
         return list(test_plan_data.docs.keys())
 
-    @mcp.resource("spec-doc://{name}")
-    def get_spec_data(name: str) -> str:
+    #@mcp.resource("spec-doc://{name}")
+    @mcp.tool()
+    def get_spec_content(name: str) -> str:
         """
         Get a specific spec document.
         """
         return matter_spec.get_doc(name)
 
-    @mcp.resource("test-plan://{name}")
-    def get_test_plan(name: str) -> str:
+    #@mcp.resource("test-plan://{name}")
+    @mcp.tool()
+    def get_test_plan_content(name: str) -> str:
         """
         Get a specific test plan document.
         """
