@@ -10,6 +10,23 @@
 import click
 from fastmcp import FastMCP
 
+import glob
+import os
+
+class MatterSpecData:
+    def __init__(self, spec_path: str):
+        self.spec_path = spec_path
+        self.docs = {}
+
+        # figure out all doc names
+        for name in glob.glob(os.path.join(spec_path, "src", "**", "*.adoc")):
+            self.docs[name[len(spec_path):].strip('/')] = name
+
+    def get_doc(name):
+        with open(self.docs[name], "rt", encoding="utf8") as f:
+            return f.read()
+
+
 @click.command()
 @click.option(
     "--matter-spec-path",
@@ -42,19 +59,24 @@ from fastmcp import FastMCP
 def cli(matter_spec_path, transport, host, port):
     mcp = FastMCP("Demo")
 
-    # Add an addition tool
-    @mcp.tool()
-    def add(a: int, b: int) -> int:
-        """Add two numbers"""
-        return a + b
-
-    # Add a dynamic greeting resource
-    @mcp.resource("greeting://{name}")
-    def get_greeting(name: str) -> str:
-        """Get a personalized greeting"""
-        return f"Hello, {name}!"
-
     print(f"Running for Matter Specification Path: {matter_spec_path}")
+    matter_spec = MatterSpecData(matter_spec_path)
+
+    @mcp.resource("data://spec/available_documents")
+    def get_spec_documents() -> list[str]:
+        """
+        Get available specification documents.
+        """
+        return list(matter_spec.docs.keys())
+
+    # Spec documentation path
+    @mcp.resource("spec-doc://{name}")
+    def get_spec_data(name: str) -> str:
+        """
+        Get a specific spec document.
+        """
+        return matter_spec.get_doc(name)
+
     if transport == 'stdio':
         mcp.run(transport=transport)
     else:
