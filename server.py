@@ -47,14 +47,14 @@ class MatterTestPlanData:
     "--spec",
     type=click.Path(exists=True, file_okay=False, dir_okay=True, resolve_path=True),
     help="Path to the Matter Specification folder.",
-    default="~/devel/connectedhomeip-spec",
+    default=os.path.expanduser("~/devel/connectedhomeip-spec"),
     show_default=True,
 )
 @click.option(
     "--test-plans",
     type=click.Path(exists=True, file_okay=False, dir_okay=True, resolve_path=True),
     help="Path to the Matter Test plans folder.",
-    default="~/devel/chip-test-plans",
+    default=os.path.expanduser("~/devel/chip-test-plans"),
     show_default=True,
 )
 @click.option(
